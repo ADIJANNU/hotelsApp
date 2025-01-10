@@ -4,21 +4,24 @@ const db = require('./db')
 require('dotenv').config();
 const personRoutes = require('./routes/personRoutes')
 const menuRoutes = require('./routes/menuRoutes')
-
+const passport = require('./auth')
 const bodyParser = require('body-parser')
-app.use(bodyParser.json())
 const PORT = process.env.PORT || 3000;
-
 const dotenv = require("dotenv");
+
+app.use(bodyParser.json())
 dotenv.config();
 
 const logRequest = (req,res,next) => {
     console.log(`[{${new Date().toLocaleString()}}] Request made to : ${req.originalUrl} `);
     next();
 }
-
 app.use(logRequest);
-app.get('/',function(req,res) {
+
+app.use(passport.initialize());
+const localMiddleWare = passport.authenticate('local', {session: false})
+
+app.get('/', localMiddleWare,function(req,res) {
     res.send('Welcome to my hotel')
 })
 
